@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Norbert`s Jasser-Auswertung</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+    <div id="app" class="text-center">
+        <h1>Norbert`s Jasser-Auswertung</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="text-center"><input type="text" placeholder="Team1" class="form-control input-lg text-center" /></th>
+                    <th class="text-center"></th>
+                    <th class="text-center"><input type="text" placeholder="Team2" class="form-control input-lg text-center" /></th>
+                </tr>
+            </thead>
+            <tbody>
+				<tr is="row-component" type="E" @myevent="parentHandler" />
+				<tr is="row-component" type="L" @myevent="parentHandler" />
+				<tr is="row-component" type="S" @myevent="parentHandler" />
+				<tr is="row-component" type="H" @myevent="parentHandler" />
+				<tr is="row-component" type="U" @myevent="parentHandler" />
+				<tr is="row-component" type="O" @myevent="parentHandler" />
+				<tr is="row-component" type="S" @myevent="parentHandler" />
+				<tr is="row-component" type="8" @myevent="parentHandler" />
+				<tr is="row-component" type="9" @myevent="parentHandler" />
+                <tr>
+                    <td class="text-center"><h1>{{ sum1 }}</h1></td>
+                    <td class="text-center text-category">Summe</td>
+                    <td class="text-center"><h1>{{ sum2 }}</h1></td>
+                </tr>
+            </tbody>
+        </table>
+		Team1: {{team1}}<br />
+		Team2: {{team2}}
+    </div>
+    <script>
+
+		Vue.config.devtools = true;
+	
+		Vue.component('row-component', {
+			props: {
+				type: {
+					type: String,
+					default: '?'
+				}
+			},
+			data: function () {
+				return {
+					team1: 0,
+					team2: 0
+				}
+			},
+			methods: {
+				signalChange: function(evt) {
+				
+					if (parseInt(evt.target.value) > 157) {
+                        evt.target.style.backgroundColor = '#ff6347';
+                        return;
+                    }
+                    evt.target.style.backgroundColor = 'transparent';
+				
+					this.$emit('myevent', this.type, this.team1, this.team2);
+				}
+			},
+			template: '<tr><td class="text-center"><input type="number" class="form-control text-center" v-model="team1" @change="signalChange" @focus="team1 = \'\'" /></td><td class="text-center text-category">{{ type }}</td><td class="text-center"><input type="number" class="form-control text-center" v-model="team2" @change="signalChange" @focus="team2 = \'\'" /></td></tr>'
+		});
+	
+        var app = new Vue({
+            el: '#app',
+            data: {
+				team1: { "E":0, "L":0, "S":0, "H":0, "U":0, "O":0, "S":0, "8":0, "9":0 },
+				team2: { "E":0, "L":0, "S":0, "H":0, "U":0, "O":0, "S":0, "8":0, "9":0 },
+                sum1: 0,
+                sum2: 0,
+            },
+            methods: {
+				parentHandler: function(type, value1, value2) {
+					var team1 = parseInt(value1);
+					var team2 = parseInt(value2);
+					
+					this.team1[type] = team1;
+					this.team2[type] = team2;
+					this.calculateSum();
+				},
+                calculateSum: function() {
+
+					this.sum1 = 0;
+					this.sum2 = 0;
+				
+					for (var key in this.team1) {
+						this.sum1 += this.calculate(key, this.team1[key]);
+					}
+					
+					for (var key in this.team2) {
+						this.sum2 += this.calculate(key, this.team2[key]);
+					}
+				
+                    return;
+                },
+                calculate(key, value) {
+                    if (value > 157) {
+                        value = 0;
+                    }
+                    if (value === 157) {
+                        value = value + 100;
+                    }
+					
+					var multiplier = 1;
+   
+					switch (key) {
+						case 'E':
+							multiplier = 1;
+							break;
+						case 'L':
+							multiplier = 2;
+							break;
+						case 'S':
+							multiplier = 3;
+							break;
+						case 'H':
+							multiplier = 4;
+							break;
+						case 'U':
+							multiplier = 5;
+							break;
+						case 'O':
+							multiplier = 6;
+							break;
+						case 'S':
+							multiplier = 7;
+							break;
+						case '8':
+							multiplier = 8;
+							break;
+						case '9':
+							multiplier = 9;
+							break;
+					}
+   
+                    return value * multiplier;
+                }
+            }
+        });
+
+    </script>
+    <style>
+        .text-category{
+            font-size:2em;
+        }
+    </style>
+</body>
+</html>
